@@ -1,0 +1,65 @@
+﻿func main() -> int {
+	var l -> ConstExpr = {69} as ConstExpr
+	var r -> ConstExpr = {420} as ConstExpr
+	var b -> BinExpr = { l as Expr&, r as Expr& } as BinExpr
+	var expr -> Expr& = b as Expr&
+	printInt(expr.eval())
+	return 0
+}
+
+type Expr interface {
+	func eval() -> int
+}
+
+type ConstExpr struct {
+	int value
+}
+
+func (ConstExpr c) eval() -> int {
+	return c.value
+}
+
+type BinExpr struct {
+	Expr& right,
+	Expr& left,
+}
+
+func (BinExpr* b) eval() -> int {
+	return b.left.eval() + b.right.eval()
+}
+/*
+where E : any
+interface List {
+	add(E element),
+	operator[](int i),
+}
+
+var x -> List<int> = list()
+*/
+func printInt(int i) {
+	if i >= 10 {
+		printInt(i / 10)
+	}
+	putchar(i % 10 + '0')
+	return
+}
+
+func printBool(bool b) {
+	if b {
+		putchar('t')
+		putchar('r')
+		putchar('u')
+		putchar('e')
+	} else {
+		putchar('f')
+		putchar('a')
+		putchar('l')
+		putchar('s')
+		putchar('e')
+	}
+	return
+}
+
+func malloc(int size) -> int*
+func free(int* ptr)
+func putchar(int c)

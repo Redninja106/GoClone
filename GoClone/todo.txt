@@ -1,0 +1,11 @@
+--member access--
+--receivers--
+--loops-- 
+--interfaces--
+heap allocs
+strings
+multiple modules
+self host
+
+extras:
+all int types
