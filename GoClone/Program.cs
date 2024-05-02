@@ -4,12 +4,15 @@ using GoClone.SyntaxTree;
 using System.Diagnostics;
 using System.Numerics;
 
-// lex->parse->register->resolve->emit->emitbody
-// register: symbols should add themselves to the proper scope
-// resolve(scope): identifier***s should resolve themselves into alternate types which explicitly reference declarations
-// verify: 
-// emit(: symbols should generate their llvm values to referenced by codegen
-// emitbody: do codegen
+// ===NEW DESIGN===
+// lex->parse->register->resolve->verify->transform->emit->emitbody
+// register(scope,err): symbols should add themselves to the proper scope
+// resolve(scope,err): identifier***s should resolve themselves into alternate types which explicitly reference declarations
+// verify(err): main error checking here, ie type mismatch
+// transform(err): syntax transformations here, ie interface{} into interface{}&
+// emit(ctx): symbols should generate their llvm values to referenced by codegen
+// emitbody(ctx, blder): do codegen
+
 string source = File.ReadAllText("project/char.gc");
 SourceReader reader = new(source);
 List<Token> tokens = [];

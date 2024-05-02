@@ -1,0 +1,48 @@
+module core
+
+interface String {
+	func length() -> int,
+	func operator[](int index) -> char,
+}
+
+interface Stringable {
+	func string() -> String&,
+}
+
+func (String& str) string() -> String& {
+	return str
+}
+
+/*
+func (String& str) operator+(String& other) -> String& {
+	var res -> char[] = ;
+	str.copyTo(res)
+	other.copyTo(res)
+	return 
+}*/
+
+// Implementations
+
+where E : any
+where L : int 
+func (E[L] array) length() {
+	return L;
+}
+
+where L : int 
+func (char[L]* c) operator[](int index) -> char {
+	return c[index]
+}
+
+// Conversions
+
+func (int i) string() -> String& {
+}
+
+func (bool b) string() -> String& {
+	if b {
+		return "true"
+	} else {
+		return "false"
+	}
+}

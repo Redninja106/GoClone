@@ -2,10 +2,12 @@
 --receivers--
 --loops-- 
 --interfaces--
-heap allocs
+heap allocs & ARC
 strings
 multiple modules
-self host
+!self host!
 
 extras:
-all int types
+all primitive types
+operator overloads
+

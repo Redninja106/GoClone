@@ -10,6 +10,10 @@
 type Expr interface {
 	func eval() -> int
 }
+type Convertable {
+	where T : any
+	func as() -> T
+}
 
 type ConstExpr struct {
 	int value
