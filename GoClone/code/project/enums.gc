@@ -72,7 +72,7 @@ type PersonState as enum {
 	Walking -> int,
 	Sleeping -> struct { int duration },
 	Talking -> String&, 
-
+	
 	func operator as() -> int,
 	func log(),
 }
