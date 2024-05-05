@@ -1,0 +1,96 @@
+
+func log(PersonState::Sleeping sleeping) {
+
+}
+
+func log(PersonState::Walking walking) {
+	print("dude be walkin tho")
+}
+
+func log(PersonState state) {
+	switch state {
+		Walking {
+			state.speed += 12
+		}
+		Sleeping {
+			print("zzzzzzzz")
+		}
+		Talking {
+			print(state)
+		}
+	}
+}
+
+type PersonState::Walking as struct { int speed }
+
+type PersonState as enum {
+	Walking -> struct { int speed },
+	Sleeping -> struct { int deepness },
+	Talking -> String&, 
+}
+
+type Expression as enum {
+	Constant -> struct { int value }
+	Binary -> BinaryExpression&
+	Unary -> UnaryExpression&
+}
+
+struct ExprLR {
+	Expression& left, Expression& right
+}
+
+type BinaryExpression as enum {
+	Addition -> ExprLR
+	Subtraction -> ExprLR
+}
+
+type UnaryExpression as enum {
+	Negate -> 
+}
+
+enum DayOfWeek {
+	Sunday,
+	Monday,
+	Tuesday,
+	Wednesday,
+	Thursday,
+	Friday,
+	Saturday,
+}
+
+type PersonState as enum {
+	/* 0 */ Walking,
+	/* 1 */ Talking,
+	/* 2 */ Sleeping,
+}
+
+func test(PersonState state) {
+	state.log()
+}
+
+type PersonState as enum {
+	Walking -> int,
+	Sleeping -> struct { int duration },
+	Talking -> String&, 
+
+	func operator as() -> int,
+	func log(),
+}
+
+func (PersonState::Walking& state) log() {
+	switch state {
+		Walking {
+			state.log()
+		}
+		Sleeping {
+			state.log()
+		}
+		Talking {
+			state.log()
+		}
+	}
+}
+
+func (PersonState::Walking walking) log() {
+	{ ptr, vtable }
+}

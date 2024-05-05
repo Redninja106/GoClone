@@ -29,24 +29,23 @@ internal class CallExpression : IExpression
         if (callee is MemberAccessExpression ma && ma.interfaceFunction != null)
         {
             var reference = ma.value.Emit(context, builder);
-            var value= builder.BuildExtractValue(reference, 0);
-            // var value = builder.BuildLoad2(valuePtr.TypeOf, valuePtr);
+            var value = builder.BuildExtractValue(reference, 0);
 
             var vtablePtr = builder.BuildExtractValue(reference, 1);
-            var vtable = builder.BuildLoad2(vtablePtr.TypeOf, vtablePtr);
-            var fn = builder.BuildGEP2(vtablePtr.TypeOf, vtable, [LLVMValueRef.CreateConstInt(context.llvmCtx.Int32Type, ma.interfaceIdx)]);
+            var fnPtrPtr = builder.BuildGEP2(vtablePtr.TypeOf, vtablePtr, [LLVMValueRef.CreateConstInt(context.llvmCtx.Int32Type, ma.interfaceIdx)]);
+            var fnPtr = builder.BuildLoad2(vtablePtr.TypeOf, fnPtrPtr);
 
             var fnType = LLVMTypeRef.CreateFunction(
-                ma.interfaceFunction.returnType.Emit(context.llvmCtx),
+                ma.interfaceFunction.returnType?.Emit(context.llvmCtx) ?? context.llvmCtx.VoidType,
                 [
-                    vtable.TypeOf, 
+                    fnPtr.TypeOf, 
                     ..ma.interfaceFunction.parameters.Select(p => p.type.Emit(context.llvmCtx))
                 ]
                 );
             
             var args2 = arguments.Select(a => a.Emit(context, builder)).Prepend(value);
 
-            return builder.BuildCall2(fnType, fn, args2.ToArray());
+            return builder.BuildCall2(fnType, fnPtr, args2.ToArray());
         }
 
         var calleeValue = callee.Emit(context, builder);
@@ -55,7 +54,24 @@ internal class CallExpression : IExpression
 
         if (callee is MemberAccessExpression ma2 && ma2.receiverTarget != null)
         {
-            args = args.Prepend(ma2.value.Emit(context, builder));
+            LLVMValueRef receiverValue;
+            if (ma2.receiverTarget.receiver.type is PointerType)
+            {
+                if (ma2.value is IAssignable assignable && assignable.EmitAssignablePointer(context, builder) is LLVMValueRef assignablePtr)
+                {
+                    receiverValue = assignablePtr;
+                }
+                else
+                {
+                    throw new("this receiver may only be called on an addressable value!");
+                }
+            }
+            else
+            {
+                receiverValue = ma2.value.Emit(context, builder);
+            }
+
+            args = args.Prepend(receiverValue);
         }
 
         LLVMValueRef[] values = args.ToArray();

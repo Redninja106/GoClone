@@ -77,7 +77,7 @@ internal class TokenReader(Token[] tokens)
         {
             return Peek(-1);
         }
-        throw new Exception($"expected {kind} ({Peek(0).Value})!");
+        throw new Exception($"expected {kind} (instead, got '{Peek(0).Value}')!");
     }
 
     public TokenReader Clone()

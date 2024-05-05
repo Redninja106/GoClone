@@ -11,8 +11,3 @@ internal class EmitContext
     public LLVMContextRef llvmCtx;
     public LLVMValueRef function; 
 }
-
-internal class EmitPointerContext(EmitContext context) : EmitContext
-{
-    public EmitContext context = context;
-}

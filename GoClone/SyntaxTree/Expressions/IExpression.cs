@@ -11,6 +11,7 @@ namespace GoClone.SyntaxTree.Expressions;
 internal interface IExpression
 {
     IExpression Resolve(IScope scope);
+    void Verify(IErrorHandler errorHandler) { }
     LLVMValueRef Emit(EmitContext context, LLVMBuilderRef builder);
-    IType GetResultType();
+    IType? GetResultType();
 }

@@ -1,5 +1,4 @@
 ﻿using GoClone.CodeGeneration;
-using GoClone.SyntaxTree.Statements;
 using GoClone.SyntaxTree.Types;
 using LLVMSharp.Interop;
 using System;
@@ -9,22 +8,23 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GoClone.SyntaxTree.Expressions;
-internal class FunctionExpression : IExpression
+internal class NegateExpression : IExpression
 {
-    public Function function;
+    public IExpression value;
 
     public LLVMValueRef Emit(EmitContext context, LLVMBuilderRef builder)
     {
-        return function.llvmFunction;
+        return builder.BuildNeg(value.Emit(context, builder));
     }
 
-    public IType GetResultType()
+    public IType? GetResultType()
     {
-        return new FunctionType { returnType = function.returnType, parameters = function.parameters.Select(p => p.type).ToArray() };
+        return value.GetResultType();
     }
 
     public IExpression Resolve(IScope scope)
     {
+        value = value.Resolve(scope);
         return this;
     }
 }

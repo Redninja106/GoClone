@@ -33,6 +33,14 @@ internal class BlockStatement : IStatement
         }
     }
 
+    public void Verify(IErrorHandler errorHandler)
+    {
+        foreach (var statement in statements)
+        {
+            statement.Verify(errorHandler);
+        }
+    }
+
     public void Emit(EmitContext context, LLVMBuilderRef builder)
     {
         foreach (var statement in statements)

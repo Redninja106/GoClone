@@ -11,16 +11,19 @@ internal class InterfaceType : IType
 {
     public List<Function> functions;
 
-    public static InterfaceType Parse(TokenReader reader)
+    public static InterfaceType Parse(TokenReader reader, bool skipKeyword = false)
     {
-        reader.NextOrError(TokenKind.Interface);
+        if (!skipKeyword)
+        {
+            reader.NextOrError(TokenKind.Interface);
+        }
         reader.NextOrError(TokenKind.OpenBrace);
 
         List<Function> functions = new();
 
         while (!reader.Next(TokenKind.CloseBrace))
         {
-            functions.Add(Function.Parse(reader));
+            functions.Add(Function.Parse(reader, []));
             if (reader.Next(TokenKind.CloseBrace))
             {
                 break;

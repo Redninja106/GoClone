@@ -6,15 +6,15 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GoClone.SyntaxTree;
-internal class ModuleDeclaration : IDeclaration
+internal class ImportDeclaration : IDeclaration
 {
     public Token moduleName;
 
-    public static ModuleDeclaration Parse(TokenReader reader)
+    public static ImportDeclaration Parse(TokenReader reader)
     {
-        reader.NextOrError(TokenKind.Module);
+        reader.NextOrError(TokenKind.Import);
         var moduleName = reader.NextOrError(TokenKind.Identifier);
-        return new ModuleDeclaration { moduleName = moduleName };
+        return new ImportDeclaration { moduleName = moduleName };
     }
 
     public void Emit(ModuleScope scope)

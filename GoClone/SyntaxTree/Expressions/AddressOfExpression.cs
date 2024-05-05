@@ -24,7 +24,7 @@ internal class AddressOfExpression : IExpression
         switch (value)
         {
             case LocalVariableExpression var:
-                return var.variable.Value;
+                return var.declStatement.Value;
             default:
                 throw new($"Cannot take address of {value}");
         }

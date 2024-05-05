@@ -1,0 +1,18 @@
+module main
+
+import libc
+
+func main() {
+	var l = createList()
+	printInt(0)
+	l.add(1)
+	l.add(2)
+	l.add(3)
+
+	printInt(0)
+	printInt(l.get(0))
+	printInt(l.get(1))
+	printInt(l.get(2))
+
+	printInt(0)
+}

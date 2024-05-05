@@ -1,0 +1,26 @@
+module lexer
+
+struct Lexer {
+	String& source,
+	int position,
+}
+
+struct Token {
+	String& source,
+	int start,
+	int end,
+}
+
+func createLexer(String& source) -> Lexer {
+	return { source, 0 } as Lexer
+}
+
+func (Lexer* lexer) nextChar() -> int {
+	var char = lexer.source.charAt(lexer.position)
+	lexer.position = lexer.position + 1
+	return char
+}
+
+func (Lexer* lexer) nextToken() -> Token {
+	return { lexer.source, 0, 0 } as Token
+}

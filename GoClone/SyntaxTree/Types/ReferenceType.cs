@@ -13,13 +13,24 @@ internal class ReferenceType : IType
 
     public unsafe LLVMTypeRef Emit(LLVMContextRef context)
     {
-        if (elementType.GetBaseType() is not InterfaceType interfaceType)
+        if (!Valid())
         {
             throw new();
         }
 
         var opaquePtr = LLVM.PointerTypeInContext((LLVMOpaqueContext*)context.Handle, 0);
         return context.GetStructType([opaquePtr, opaquePtr], false);
+    }
+
+    private bool Valid()
+    {
+        if (elementType.GetEffectiveType() is InterfaceType interfaceType)
+            return true;
+
+        if (elementType.GetEffectiveType() is ArrayType arrayType && arrayType.length == null)
+            return true;
+
+        return false;
     }
 
     public bool Equals(IType? other)
@@ -35,7 +46,7 @@ internal class ReferenceType : IType
 
     public override string ToString()
     {
-        return elementType.ToString();
+        return elementType.ToString() + "&";
     }
 
     public override int GetHashCode()

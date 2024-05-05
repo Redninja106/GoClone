@@ -120,10 +120,12 @@ internal class BinaryExpression : IExpression
 
     public IType GetResultType()
     {
+
         switch (op)
         {
             case TokenKind.Plus:
             case TokenKind.Minus:
+                return left.GetResultType();
             case TokenKind.Star:
             case TokenKind.Slash:
             case TokenKind.Percent:

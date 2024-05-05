@@ -20,6 +20,7 @@ internal class CharacterExpression : IExpression
     public LLVMValueRef Emit(EmitContext context, LLVMBuilderRef builder)
     {
         char c = character.Value.Trim('\'')[0];
+        
         return LLVMValueRef.CreateConstInt(context.llvmCtx.Int32Type, c, false);
     }
 

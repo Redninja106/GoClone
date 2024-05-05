@@ -122,4 +122,8 @@ internal class ConditionalStatement : IStatement
         }
         return sb.ToString();
     }
+
+    public void Verify(IErrorHandler errorHandler)
+    {
+    }
 }

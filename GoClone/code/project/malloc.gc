@@ -1,0 +1,20 @@
+module main
+
+import libc
+
+type Point struct {
+	int x,
+	int y,
+}
+
+func main() {
+	var p -> Point* = malloc(sizeof(Point)) as Point*
+	p.x = 10
+	p.y = 20
+
+	printInt(p.x)
+	putchar(10)
+	printInt(p.y)
+
+	free(p)
+}

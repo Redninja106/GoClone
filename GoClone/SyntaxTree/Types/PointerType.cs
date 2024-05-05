@@ -13,7 +13,7 @@ internal class PointerType : IType
 
     public LLVMTypeRef Emit(LLVMContextRef context)
     {
-        var elem = elementType.Emit(context);
+        // var elem = elementType.Emit(context);
         unsafe 
         {
             LLVMOpaqueType* opaqueType = LLVM.PointerTypeInContext((LLVMOpaqueContext*)context.Handle, 0);

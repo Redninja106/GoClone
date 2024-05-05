@@ -1,0 +1,34 @@
+module libc
+
+func malloc(int size) -> any*
+func free(any* ptr)
+func putchar(int c)
+func getchar() -> int
+
+func printInt(int i) {
+	if (i < 0) {
+		putchar('-')
+		printInt(-i)
+		return
+	}
+	if i >= 10 {
+		printInt(i / 10)
+	}
+	putchar(i % 10 + '0')
+	return
+}
+
+func printBool(bool b, String&*** p) {
+	if b {
+		putchar('t')
+		putchar('r')
+		putchar('u')
+		putchar('e')
+	} else {
+		putchar('f')
+		putchar('a')
+		putchar('l')
+		putchar('s')
+		putchar('e')
+	}
+}

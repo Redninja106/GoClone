@@ -10,5 +10,6 @@ namespace GoClone.SyntaxTree.Statements;
 internal interface IStatement
 {
     void Resolve(IScope scope);
+    void Verify(IErrorHandler errorHandler);
     void Emit(EmitContext context, LLVMBuilderRef builder);
 }

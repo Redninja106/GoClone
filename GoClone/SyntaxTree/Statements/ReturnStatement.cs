@@ -57,4 +57,8 @@ internal class ReturnStatement : IStatement
 
         return result.ToString();
     }
+
+    public void Verify(IErrorHandler errorHandler)
+    {
+    }
 }

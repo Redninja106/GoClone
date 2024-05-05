@@ -11,9 +11,12 @@ internal class StructType : IType
 {
     public List<Parameter> fields;
 
-    public static StructType Parse(TokenReader reader)
+    public static StructType Parse(TokenReader reader, bool skipKeyword = false)
     {
-        reader.NextOrError(TokenKind.Struct);
+        if (!skipKeyword)
+        {
+            reader.NextOrError(TokenKind.Struct);
+        }
         reader.NextOrError(TokenKind.OpenBrace);
 
         List<Parameter> fields = new();
@@ -33,7 +36,7 @@ internal class StructType : IType
 
     public LLVMTypeRef Emit(LLVMContextRef context)
     {
-        return LLVMTypeRef.CreateStruct(fields.Select(f => f.type.Emit(context)).ToArray(), false);
+        return context.GetStructType(fields.Select(f => f.type.Emit(context)).ToArray(), false);
     }
 
     public bool Equals(IType? other)

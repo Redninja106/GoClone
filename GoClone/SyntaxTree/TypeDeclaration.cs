@@ -17,11 +17,26 @@ internal class TypeDeclaration : IDeclaration, IResolvableType
 
     public static TypeDeclaration Parse(TokenReader reader)
     {
-        reader.NextOrError(TokenKind.Type);
-        Token name = reader.NextOrError(TokenKind.Identifier);
-        IType target = Module.ParseType(reader);
-
-        return new TypeDeclaration { name = name, target = target };
+        if (reader.Next(TokenKind.Type))
+        {
+            Token name = reader.NextOrError(TokenKind.Identifier);
+            reader.NextOrError(TokenKind.As);
+            IType target = Module.ParseType(reader);
+            return new TypeDeclaration { name = name, target = target };
+        }
+        if (reader.Next(TokenKind.Interface))
+        {
+            Token name = reader.NextOrError(TokenKind.Identifier);
+            IType target = InterfaceType.Parse(reader, true);
+            return new TypeDeclaration { name = name, target = target };
+        }
+        if (reader.Next(TokenKind.Struct))
+        {
+            Token name = reader.NextOrError(TokenKind.Identifier);
+            IType target = StructType.Parse(reader, true);
+            return new TypeDeclaration { name = name, target = target };
+        }
+        throw new();
     }
 
     public void Emit(ModuleScope scope)
@@ -66,5 +81,9 @@ internal class TypeDeclaration : IDeclaration, IResolvableType
     public override int GetHashCode()
     {
         return HashCode.Combine(name.Value.ToString(), target.GetHashCode());
+    }
+
+    public void Verify(ModuleScope scope)
+    {
     }
 }

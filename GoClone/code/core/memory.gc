@@ -1,0 +1,11 @@
+module core
+
+func _alloc(int size) {
+}
+
+func _free() {
+}
+
+[private]
+func getRefCount(any* ptr) {
+}

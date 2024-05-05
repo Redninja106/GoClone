@@ -32,6 +32,16 @@ internal interface IType : IEquatable<IType>
         return this;
     }
 
+    IType GetEffectiveType()
+    {
+        if (this is DeclaredType declared)
+        {
+            return declared.declaration.target.GetEffectiveType();
+        }
+
+        return this;
+    }
+
     IType GetPointerElementType()
     {
         if (this is PointerType ptr)

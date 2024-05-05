@@ -1,0 +1,41 @@
+module main
+
+import libc
+
+func main() {
+	var a -> int[4] = null(int[4])
+	a[0] = 3
+	a[1] = 2
+	a[2] = 1
+	a[3] = 0
+	var s = a.sum()
+	putchar('=')
+	putchar('=')
+	putchar('=')
+	putchar('=')
+	putchar('=')
+	putchar(10)
+	printInt(s)
+}
+
+func (int[4]* values) sum() -> int {
+	var i = 0
+	var sum = 0
+	while i < 4 {
+		printInt(values[i])
+		putchar(10)
+		sum = sum + values[i]
+		i = i + 1
+	}
+	return sum
+}
+
+/*
+func (int[]& values) smthing() -> int {
+	value.length()
+}
+
+func (int[]& values) length() -> int {
+	return (values as struct { any* val, any* length }).length as int 
+}
+*/

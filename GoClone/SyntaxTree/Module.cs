@@ -85,16 +85,32 @@ internal class Module
             return InterfaceType.Parse(reader);
         }
 
+        if (reader.Next(TokenKind.Any))
+        {
+            return new InterfaceType { functions = [] };
+        }
+
         throw new Exception();
     }
 
     public static IDeclaration ParseDeclaration(TokenReader reader)
     {
+        List<Token> modifiers = [];
+        if (reader.Next(TokenKind.OpenBracket))
+        {
+            modifiers.Add(reader.NextOrError(TokenKind.Identifier));
+            while (reader.Next(TokenKind.Comma))
+            {
+                modifiers.Add(reader.NextOrError(TokenKind.Identifier));
+            }
+            reader.NextOrError(TokenKind.CloseBracket);
+        }
+
         if (reader.Current.kind == TokenKind.Func)
         {
-            return Function.Parse(reader);
+            return Function.Parse(reader, modifiers.ToArray());
         }
-        if (reader.Current.kind == TokenKind.Type)
+        if (reader.Current.kind is TokenKind.Type or TokenKind.Interface or TokenKind.Struct)
         {
             return TypeDeclaration.Parse(reader);
         }
@@ -105,6 +121,10 @@ internal class Module
         if (reader.Current.kind == TokenKind.Module)
         {
             return ModuleDeclaration.Parse(reader);
+        }
+        if (reader.Current.kind == TokenKind.Import)
+        {
+            return ImportDeclaration.Parse(reader);
         }
 
         throw new();
@@ -205,6 +225,10 @@ internal class Module
         {
             return new AddressOfExpression() { value = ParseTerm(reader) };
         }
+        if (reader.Next(TokenKind.Minus))
+        {
+            return new NegateExpression() { value = ParseTerm(reader) };
+        }
 
         var term = ParseTermOnly(reader);
         
@@ -225,6 +249,14 @@ internal class Module
                 }
 
                 term = new CallExpression { callee = term, arguments = arguments.ToArray() };
+                continue;
+            }
+            else if (reader.Next(TokenKind.OpenBracket))
+            {
+                var idx = ParseExpression(reader);
+                reader.NextOrError(TokenKind.CloseBracket);
+
+                term = new ArrayIndexExpression { array = term, index = idx };
                 continue;
             }
             else if (reader.Next(TokenKind.Dot))
@@ -268,6 +300,10 @@ internal class Module
         {
             return new CharacterExpression { character = character };
         }
+        if (reader.Next(TokenKind.String, out Token str))
+        {
+            return new StringExpression { value = str };
+        }
         if (reader.Next(TokenKind.True))
         {
             return new TrueExpression();
@@ -282,6 +318,13 @@ internal class Module
             var type = ParseType(reader);
             reader.NextOrError(TokenKind.CloseParenthesis);
             return new NullExpression { type = type };
+        }
+        if (reader.Next(TokenKind.SizeOf))
+        {
+            reader.NextOrError(TokenKind.OpenParenthesis);
+            var type = ParseType(reader);
+            reader.NextOrError(TokenKind.CloseParenthesis);
+            return new SizeOfExpression { type = type };
         }
         if (reader.Next(TokenKind.OpenBrace))
         {

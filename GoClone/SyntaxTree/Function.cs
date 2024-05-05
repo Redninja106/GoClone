@@ -12,12 +12,15 @@ using LLVMSharp.Interop;
 namespace GoClone.SyntaxTree;
 internal class Function : IDeclaration, IResolvableValue
 {
+    public Token[] modifiers;
     public Parameter? receiver;
     public Token name;
     public List<Parameter> parameters = [];
     public IType? returnType;
     public BlockStatement? body;
+    public OverloadableOperator? op;
 
+    public LLVMBuilderRef varBuilder;
     public LLVMValueRef llvmFunction;
     public LLVMTypeRef llvmFunctionType;
 
@@ -25,7 +28,7 @@ internal class Function : IDeclaration, IResolvableValue
 
     public LLVMValueRef Value => llvmFunction;
 
-    public static Function Parse(TokenReader reader)
+    public static Function Parse(TokenReader reader, Token[] modifiers)
     {
         reader.NextOrError(TokenKind.Func);
 
@@ -35,8 +38,17 @@ internal class Function : IDeclaration, IResolvableValue
             receiver = Parameter.Parse(reader);
             reader.NextOrError(TokenKind.CloseParenthesis);
         }
-        Token name = reader.NextOrError(TokenKind.Identifier);
 
+        OverloadableOperator? op = null;
+        Token name;
+        if (reader.Next(TokenKind.Operator, out name))
+        {
+            op = ReadOperator(reader);
+        }
+        else
+        {
+            name = reader.NextOrError(TokenKind.Identifier);
+        }
         List<Parameter> parameters = [];
         int index = 0;
         if (receiver != null)
@@ -68,6 +80,7 @@ internal class Function : IDeclaration, IResolvableValue
 
         return new()
         {
+            modifiers = modifiers,
             receiver = receiver,
             name = name,
             parameters = parameters,
@@ -96,7 +109,9 @@ internal class Function : IDeclaration, IResolvableValue
         }
 
         var builder = scope.context.CreateBuilder();
+        varBuilder = scope.context.CreateBuilder();
         var block = scope.context.AppendBasicBlock(llvmFunction, "entry");
+        varBuilder.PositionAtEnd(block);
         builder.PositionAtEnd(block);
 
         if (receiver != null)
@@ -110,6 +125,24 @@ internal class Function : IDeclaration, IResolvableValue
 
         EmitContext ctx = new() { function = llvmFunction, llvmCtx = scope.context };
         body.Emit(ctx, builder);
+
+        // defer var adding to the scope or smth so they are all in vars block
+
+        foreach (var basicBlock in llvmFunction.BasicBlocks)
+        {
+            if (basicBlock.LastInstruction.IsATerminatorInst.Handle == 0)
+            {
+                if (returnType == null)
+                {
+                    builder.PositionAtEnd(basicBlock);
+                    builder.BuildRetVoid();
+                }
+                else
+                {
+                    throw new Exception($"Function {name} does not return!");
+                }
+            }
+        }
     }
 
     internal LLVMValueRef GetParameterValue(Parameter parameter)
@@ -126,7 +159,7 @@ internal class Function : IDeclaration, IResolvableValue
     public void Emit(ModuleScope scope)
     {
         LLVMTypeRef returnType = this.returnType?.Emit(scope.context) ?? scope.context.VoidType;
-
+        
         IEnumerable<Parameter> signature = parameters;
         if (receiver is not null)
             signature = signature.Prepend(receiver);
@@ -134,8 +167,15 @@ internal class Function : IDeclaration, IResolvableValue
         LLVMTypeRef[] parameterTypes = signature.Select(p => p.type.Emit(scope.context)).ToArray();
 
         llvmFunctionType = LLVMTypeRef.CreateFunction(returnType, parameterTypes);
+        if (llvmFunctionType.Context != scope.context)
+            throw new Exception();
         llvmFunction = scope.module.AddFunction(GetLLVMName(), llvmFunctionType);
 
+        // create interface stub
+        // interface implementation functions must accept a pointer to the type they are implementing for
+        // so if we accept the direct value, we generate a extra function that accepts a pointer and calls this
+        // one with its value. We call this the interface stub. This function's interface stub is then used in
+        // place of this function when generating vtables. 
         if (receiver is not null && receiver.type is not PointerType)
         {
             var stubReceiverType = new PointerType { elementType = receiver.type };
@@ -143,13 +183,15 @@ internal class Function : IDeclaration, IResolvableValue
             var stubFunctionType = LLVMTypeRef.CreateFunction(returnType, parameterTypes);
             var stub = scope.module.AddFunction(GetLLVMName() + ".istub", stubFunctionType);
 
+            // we can emit the stubs body now: it doesn't need to reference anything except the main function
+
             using LLVMBuilderRef builder = scope.context.CreateBuilder();
             var block = stub.AppendBasicBlock("entry");
             builder.PositionAtEnd(block);
 
             var valuePtr = stub.FirstParam;
             var value = builder.BuildLoad2(receiver.type.Emit(scope.context), valuePtr);
-            var call = builder.BuildCall2(llvmFunctionType, llvmFunction, [value, ..parameters.Select(p => p.Value)]);
+            var call = builder.BuildCall2(llvmFunctionType, llvmFunction, [value, .. stub.Params.Skip(1)]);
             if (this.returnType == null)
             {
                 builder.BuildRetVoid();
@@ -160,6 +202,24 @@ internal class Function : IDeclaration, IResolvableValue
             }
             interfaceStub = stub;
         }
+    }
+
+    private static OverloadableOperator ReadOperator(TokenReader reader)
+    {
+        if (reader.Next(TokenKind.Plus))
+        {
+            return OverloadableOperator.Addition;
+        }
+        if (reader.Next(TokenKind.Minus))
+        {
+            return OverloadableOperator.Subtraction;
+        }
+        if (reader.Next(TokenKind.OpenBracket))
+        {
+            reader.NextOrError(TokenKind.CloseBracket);
+            return OverloadableOperator.Indexing;
+        }
+        throw new Exception("Expected an operator!");
     }
 
     public string GetLLVMName()
@@ -247,6 +307,11 @@ internal class Function : IDeclaration, IResolvableValue
         }
         body?.Resolve(functionScope);
     }
+
+    public void Verify(ModuleScope scope)
+    {
+        body?.Verify(scope.errorHandler);
+    }
 }
 
 class Parameter : IResolvableValue, IEquatable<Parameter>
@@ -275,4 +340,11 @@ class Parameter : IResolvableValue, IEquatable<Parameter>
     }
 
     
+}
+
+enum OverloadableOperator
+{
+    Addition,
+    Subtraction,
+    Indexing,
 }

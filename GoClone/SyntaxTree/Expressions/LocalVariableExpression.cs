@@ -11,21 +11,25 @@ using System.Threading.Tasks;
 namespace GoClone.SyntaxTree.Expressions;
 internal class LocalVariableExpression : IExpression, IAssignable
 {
-    public LocalVariableStatement variable;
+    public LocalVariableStatement declStatement;
 
     public LLVMValueRef Emit(EmitContext context, LLVMBuilderRef builder)
     {
-        return builder.BuildLoad2(variable.variable.type.Emit(context.llvmCtx), variable.Value);
+        return builder.BuildLoad2(declStatement.variable.type.Emit(context.llvmCtx), declStatement.Value);
     }
 
     public LLVMValueRef? EmitAssignablePointer(EmitContext context, LLVMBuilderRef builder)
     {
-        return variable.Value;
+        return declStatement.Value;
+    }
+
+    public void Verify(IErrorHandler errorHandler)
+    {
     }
 
     public IType GetResultType()
     {
-        return variable.variable.type;
+        return declStatement.variable.type;
     }
 
     public IExpression Resolve(IScope scope)

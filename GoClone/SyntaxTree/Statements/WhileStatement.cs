@@ -44,4 +44,8 @@ internal class WhileStatement : IStatement
         condition = condition.Resolve(scope);
         body.Resolve(scope);
     }
+
+    public void Verify(IErrorHandler errorHandler)
+    {
+    }
 }

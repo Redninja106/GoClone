@@ -18,4 +18,9 @@ internal class ForStatement : IStatement
     {
         throw new NotImplementedException();
     }
+
+    public void Verify(IErrorHandler errorHandler)
+    {
+        throw new NotImplementedException();
+    }
 }

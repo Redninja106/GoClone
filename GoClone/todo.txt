@@ -2,12 +2,24 @@
 --receivers--
 --loops-- 
 --interfaces--
-heap allocs & ARC
-strings
-multiple modules
+--heap allocs-- & ARC
+arrays // half?
+strings // half
+--multiple modules--
+enums
+std lib
 !self host!
 
+std lib
+dicts
+lists
+
 extras:
+generic functions
+generic types
+dynamic arrays (ie int[]&, requires operator overloading)
 all primitive types
 operator overloads
+tuples
+modifiers
 

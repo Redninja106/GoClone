@@ -1,0 +1,34 @@
+module main
+
+import libc
+
+[private]
+func main() {
+	var str -> int[13] = "hello, world!"
+	var a -> int[]& = str as int[]&
+	var s -> String& = a as String&
+	printStr(s)
+	printStr("hello, world!" as int[]&)
+}
+
+func printStr(String& str) {
+	var i = 0
+	while i < str.length() {
+		putchar(str.charAt(i))
+		i = i + 1
+	}
+}
+
+type Array as interface {
+	func length(),
+	func operator[](int index),
+}
+
+func (int[]&* c) length() -> int {
+	var ref = (*c) as struct{any* val, any* len} 
+	return ref.len as int
+}
+func (int[]&* c) charAt(int index) -> int {
+	var ref = (*c) as struct{int[]* val, any* len} 
+	return ref.val[index]
+}

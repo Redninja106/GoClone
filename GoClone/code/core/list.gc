@@ -1,0 +1,42 @@
+module core
+
+import libc
+
+struct List {
+	int count,
+	int capacity,
+	int[]* elements,
+}
+
+func createList() -> List {
+	return { 0, 0, null(int*) } as List
+}
+
+func (List* list) add(int element) {
+	list.ensureCapacity(list.count + 1)
+	list.elements[list.count] = element
+	list.count = list.count + 1
+}
+
+[private]
+func (List* list) ensureCapacity(int capacity) {
+	if list.capacity < capacity {
+		if list.elements != null(int[]*) {
+			free(list.elements)
+		}
+		if list.capacity == 0 {
+			list.capacity = 4
+	    } else {
+			list.capacity = list.capacity * 2
+		}
+
+		list.elements = malloc(sizeof(int) * list.capacity) as int[]*
+	}
+}
+
+func (List* list) get(int index) -> int {
+	putchar('g')
+	printInt(list.elements as int)
+	putchar('g')
+	return list.elements[index]
+}

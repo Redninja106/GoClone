@@ -8,6 +8,23 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GoClone.SyntaxTree.Expressions;
+/*
+ * struct TrueExpression {  }
+ * 
+ * func (TrueExpression expr) Emit(EmitContext context, LLVMBuilder* builder) -> LLVMValue* {
+ *      return LLVMCreateConstInt(context.llvmCtx.Int1Type, 1)
+ * }
+ * 
+ * func (TrueExpression expr) GetResultType() -> Type& {
+ *      return { TokenKind.Bool } as PrimitiveType
+ * }
+ * 
+ * func (TrueExpression expr) Resolve() -> Expression& {
+ *      return expr
+ * }
+ * 
+ */
+
 internal class TrueExpression : IExpression
 {
     public LLVMValueRef Emit(EmitContext context, LLVMBuilderRef builder)
@@ -22,6 +39,6 @@ internal class TrueExpression : IExpression
 
     public IExpression Resolve(IScope scope)
     {
-        throw new NotImplementedException();
+        return this;
     }
 }

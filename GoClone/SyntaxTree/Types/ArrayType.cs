@@ -11,16 +11,21 @@ internal class ArrayType : IType
 {
     public IType elementType;
     public Token? length;
+    public int? intLength;
 
-    IType IType.Resolve(GoClone.CodeGeneration.IScope scope)
+    public IType Resolve(IScope scope)
     {
+        if (length != null)
+        {
+            intLength = int.Parse(length.Value.Value);
+        }
         elementType = elementType.Resolve(scope);
         return this;
     }
 
     public LLVMTypeRef Emit(LLVMContextRef context)
     {
-        return LLVMTypeRef.CreateArray(elementType.Emit(context), uint.Parse(length.Value.ToString()));
+        return LLVMTypeRef.CreateArray(elementType.Emit(context), (uint)(intLength ?? 0));
     }
 
     public override string ToString()
@@ -30,11 +35,22 @@ internal class ArrayType : IType
 
     public bool Equals(IType? other)
     {
-        return other is ArrayType array && elementType.Equals(array.elementType) && length.Value.Value.SequenceEqual(length.Value.Value);
+        if (other is ArrayType array)
+        {
+            if (elementType.Equals(array.elementType))
+            {
+                if (length is null && array.length is null)
+                    return true;
+
+                if (length!.Value.Value.SequenceEqual(length.Value.Value))
+                    return true;
+            }
+        }
+        return false;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(elementType.GetHashCode(), length?.GetHashCode());
+        return HashCode.Combine(elementType.GetHashCode(), intLength);
     }
 }

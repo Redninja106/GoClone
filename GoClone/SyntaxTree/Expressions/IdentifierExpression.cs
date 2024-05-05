@@ -21,7 +21,7 @@ internal class IdentifierExpression : IExpression
             case VariableDeclaration var:
                 return new GlobalVariableExpression { declaration = var };
             case LocalVariableStatement local:
-                return new LocalVariableExpression { variable = local };
+                return new LocalVariableExpression { declStatement = local };
             case Function fn:
                 return new FunctionExpression { function = fn };
             case Parameter p:

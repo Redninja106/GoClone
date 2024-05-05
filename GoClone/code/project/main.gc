@@ -1,0 +1,8 @@
+module main
+
+import libc
+
+func main() {
+	var c = getchar()
+	putchar(c)
+}

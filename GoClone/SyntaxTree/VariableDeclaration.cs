@@ -44,6 +44,11 @@ internal class VariableDeclaration : IDeclaration, IResolvableValue
         return variable.ToString();
     }
 
+    public void Verify(ModuleScope scope)
+    {
+        throw new NotImplementedException();
+    }
+
     internal LLVMValueRef GetLLVMValue()
     {
         return value;

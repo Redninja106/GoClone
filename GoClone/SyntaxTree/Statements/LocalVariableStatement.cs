@@ -1,5 +1,6 @@
 ﻿using GoClone.CodeGeneration;
 using GoClone.SyntaxTree.Expressions;
+using GoClone.SyntaxTree.Types;
 using LLVMSharp.Interop;
 using System;
 using System.Collections.Generic;
@@ -21,8 +22,32 @@ internal class LocalVariableStatement : IStatement, IResolvableValue
 
     public void Resolve(IScope scope)
     {
-        variable.type = variable.type.Resolve(scope);
+        variable.type = variable.type?.Resolve(scope);
         variable.initializer = variable.initializer?.Resolve(scope);
+
+        switch ((variable.type, variable.initializer))
+        {
+            case (null, null):
+                throw new Exception("variable must declare a type or initializer");
+            case (null, IExpression):
+                variable.type = variable.initializer.GetResultType().Resolve(scope);
+                break;
+            case (IType, null):
+                variable.initializer = new NullExpression() { type = variable.type }.Resolve(scope);
+                break;
+            case (IType, IExpression):
+                if (!variable.type.Equals(variable.initializer.GetResultType()))
+                {
+                    variable.initializer = new CastExpression { type = variable.type, value = variable.initializer }.Resolve(scope);
+                }
+                break;
+            default:
+                throw new Exception();
+        }
+    }
+
+    public void Verify(IErrorHandler errorHandler)
+    {
     }
 
     public void Emit(EmitContext context, LLVMBuilderRef builder)

@@ -1,0 +1,52 @@
+﻿module main
+
+import libc
+
+func main() -> int {
+	var l = {69} as ConstExpr
+	var r = {420} as ConstExpr
+	var b = { l as Expr&, r as Expr& } as BinExpr
+	printValue(b as Expr&)
+	printValue(l as Expr&)
+	printValue(r as Expr&)
+	return 0
+}
+
+func printValue(Expr& expression) {
+	printInt(expression.eval())
+}
+
+
+interface Expr {
+	func eval() -> int
+}
+
+type ConstExpr as struct {
+	int value
+}
+
+func (ConstExpr c) eval() -> int {
+	return c.value
+}
+
+type BinExpr as struct {
+	Expr& right,
+	Expr& left,
+}
+
+func (BinExpr* b) eval() -> int {
+	return b.left.eval() + b.right.eval()
+}
+
+func printInt(int i) {
+	if (i < 0) {
+		putchar('-')
+		printInt(-i)
+		return
+	}
+	if i >= 10 {
+		printInt(i / 10)
+	}
+	putchar(i % 10 + '0')
+	return
+}

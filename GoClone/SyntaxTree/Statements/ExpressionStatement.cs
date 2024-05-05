@@ -33,4 +33,8 @@ internal class ExpressionStatement : IStatement
     {
         return expression.ToString()!;
     }
+
+    public void Verify(IErrorHandler errorHandler)
+    {
+    }
 }

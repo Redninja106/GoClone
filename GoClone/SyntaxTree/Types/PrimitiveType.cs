@@ -38,6 +38,6 @@ internal class PrimitiveType : IType
 
     public override int GetHashCode()
     {
-        return PrimitiveKind.GetHashCode();
+        return (int)PrimitiveKind;
     }
 }

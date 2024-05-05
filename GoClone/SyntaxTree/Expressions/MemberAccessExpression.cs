@@ -118,11 +118,17 @@ internal class MemberAccessExpression : IExpression, IAssignable
         if (value is IAssignable assignable)
         {
             var structType = value.GetResultType().Emit(context.llvmCtx);
+            
             var ptr = assignable.EmitAssignablePointer(context, builder);
             if (ptr != null)
             {
-                return builder.BuildStructGEP2(structType, ptr.Value, fieldIdx);
+                return builder.BuildStructGEP2(value.GetResultType().GetPointerElementType().Emit(context.llvmCtx), ptr.Value, fieldIdx);
             }
+        }
+
+        if (GetResultType().GetEffectiveType() is PointerType p)
+        {
+            return Emit(context, builder);
         }
 
         return null;

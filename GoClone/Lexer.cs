@@ -54,6 +54,10 @@ internal class Lexer
                 "false" => TokenKind.False,
                 "as" => TokenKind.As,
                 "null" => TokenKind.Null,
+                "sizeof" => TokenKind.SizeOf,
+                "any" => TokenKind.Any,
+                "import" => TokenKind.Import,
+                "operator" => TokenKind.Operator,
                 _ => tok.kind
             };
             return tok;
@@ -67,7 +71,7 @@ internal class Lexer
 
             return reader.MakeToken(TokenKind.Number);
         }
-
+        
         switch (c)
         {
             case '(':
@@ -118,7 +122,7 @@ internal class Lexer
                 }
                 if (reader.Next('/'))
                 {
-                    while (reader.Peek(-1) != '\n')
+                    while (reader.Peek(-1) is not ('\n' or '\0'))
                     {
                         reader.Next();
                     }
@@ -176,7 +180,8 @@ internal class Lexer
             case '\'':
                 while (!reader.Next('\'') && reader.Peek(-1) != '\\')
                 {
-                    reader.Next();
+                    if (reader.Next() == 0)
+                        break;
                 }
                 return reader.MakeToken(TokenKind.Character);
             default:
@@ -303,6 +308,10 @@ enum TokenKind
     False,
     As,
     Null,
+    SizeOf,
+    Any,
+    Import,
+    Operator,
 
     // TYPES
 
@@ -341,5 +350,4 @@ enum TokenKind
     LessThanEqual,
     GreaterThan,
     GreaterThanEqual,
-
 }

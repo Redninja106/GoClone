@@ -8,15 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GoClone.CodeGeneration;
-internal class ModuleScope(LLVMContextRef context, LLVMModuleRef module) : IScope
+internal class ModuleScope(LLVMContextRef context, LLVMModuleRef module, IErrorHandler errorHandler) : IScope
 {
     public Dictionary<string, IResolvableValue> valueDeclarations = [];
     public Dictionary<string, IResolvableType> typeDeclarations = [];
     public Dictionary<IType, Dictionary<string, Function>> receivers = new(EqualityComparer<IType>.Default);
     public Dictionary<IType, Dictionary<InterfaceType, LLVMValueRef>> vtables = new(EqualityComparer<IType>.Default);
+    public List<ModuleScope> importedScopes = [];
 
     public LLVMContextRef context = context;
     public LLVMModuleRef module = module;
+    public IErrorHandler errorHandler = errorHandler;
 
     public FunctionScope GetFunction()
     {
@@ -30,17 +32,56 @@ internal class ModuleScope(LLVMContextRef context, LLVMModuleRef module) : IScop
 
     public IResolvableValue ResolveValue(Token identifier)
     {
-        return valueDeclarations[identifier.ToString()];
+        if (valueDeclarations.TryGetValue(identifier.ToString(), out var value))
+        {
+            return value;
+        }
+
+        foreach (var imported in importedScopes)
+        {
+            if (imported.valueDeclarations.TryGetValue(identifier.ToString(), out value))
+            {
+                return value;
+            }
+        }
+
+        throw new Exception($"unknown identifier {identifier}");
     }
 
     public IResolvableType ResolveType(Token identifier)
     {
-        return typeDeclarations[identifier.ToString()];
+        if (typeDeclarations.TryGetValue(identifier.ToString(), out var value))
+        {
+            return value;
+        }
+
+        foreach (var imported in importedScopes)
+        {
+            if (imported.typeDeclarations.TryGetValue(identifier.ToString(), out value))
+            {
+                return value;
+            }
+        }
+
+        throw new Exception($"unknown type {identifier}");
     }
 
     public Function ResolveReceiver(IType type, Token name)
     {
-        return receivers[type][name.ToString()];
+        if (receivers.TryGetValue(type, out var receiverMap) && receiverMap.TryGetValue(name.ToString(), out var fn))
+        {
+            return fn;
+        }
+
+        foreach (var imported in importedScopes)
+        {
+            if (imported.receivers.TryGetValue(type, out receiverMap) && receiverMap.TryGetValue(name.ToString(), out fn))
+            {
+                return fn;
+            }
+        }
+
+        throw new Exception($"type {type} has no receiver {name}");
     }
 
     public LLVMValueRef GetInterfaceVTable(IType type, IType iface)

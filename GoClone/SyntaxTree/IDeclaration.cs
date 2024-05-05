@@ -1,4 +1,6 @@
 ﻿using GoClone.CodeGeneration;
+using GoClone.SyntaxTree.Expressions;
+using GoClone.SyntaxTree.Statements;
 using LLVMSharp.Interop;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ internal interface IDeclaration
 {
     void Register(ModuleScope scope);
     void Resolve(ModuleScope scope);
+    void Verify(ModuleScope scope);
     void Emit(ModuleScope scope);
 }
 
