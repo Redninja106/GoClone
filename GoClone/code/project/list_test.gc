@@ -4,15 +4,18 @@ import libc
 
 func main() {
 	var l = createList()
-	printInt(0)
-	l.add(1)
+	putchar(' ')
+	l.add(0)
+	putchar(' ')
 	l.add(2)
+	putchar(' ')
 	l.add(3)
-
-	printInt(0)
+	putchar(' ')
 	printInt(l.get(0))
+	putchar(' ')
 	printInt(l.get(1))
+	putchar(' ')
 	printInt(l.get(2))
+	putchar(' ')
 
-	printInt(0)
 }

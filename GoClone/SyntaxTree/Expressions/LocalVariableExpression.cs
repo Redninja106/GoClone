@@ -36,4 +36,9 @@ internal class LocalVariableExpression : IExpression, IAssignable
     {
         return this;
     }
+
+    public override string ToString()
+    {
+        return this.declStatement.variable.name.ToString();
+    }
 }

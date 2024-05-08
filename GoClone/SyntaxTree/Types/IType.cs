@@ -44,7 +44,7 @@ internal interface IType : IEquatable<IType>
 
     IType GetPointerElementType()
     {
-        if (this is PointerType ptr)
+        if (this.GetEffectiveType() is PointerType ptr)
         {
             return ptr.elementType.GetPointerElementType();
         }

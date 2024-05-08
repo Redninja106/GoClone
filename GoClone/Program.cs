@@ -15,11 +15,10 @@ using System.Numerics;
 string[] sources = [
     File.ReadAllText("code/libc.gc"),
     File.ReadAllText("code/core/string.gc"),
-    // File.ReadAllText("code/core/list.gc"),
+    File.ReadAllText("code/core/list.gc"),
     // File.ReadAllText("code/project/lexer.gc"),
-    // File.ReadAllText("code/project/list_test.gc"),
-    File.ReadAllText("code/project/interfaces.gc"),
-
+    File.ReadAllText("code/project/list_test.gc"),
+    // File.ReadAllText("code/project/interfaces.gc"),
 ];
 
 List<Module> modules = new();

@@ -35,8 +35,5 @@ func (List* list) ensureCapacity(int capacity) {
 }
 
 func (List* list) get(int index) -> int {
-	putchar('g')
-	printInt(list.elements as int)
-	putchar('g')
 	return list.elements[index]
 }

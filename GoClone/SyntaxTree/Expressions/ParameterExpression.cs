@@ -35,4 +35,9 @@ internal class ParameterExpression : IExpression, IAssignable
     {
         return this;
     }
+
+    public override string ToString()
+    {
+        return parameter.name.ToString();
+    }
 }

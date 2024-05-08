@@ -3,7 +3,11 @@ module core
 interface String {
 	func length() -> int,
 	func charAt(int index) -> int,
-} 
+}
+
+interface Stringable {
+	func string() -> String&,
+}
 
 // === string impl for int[]& === 
 
@@ -16,4 +20,3 @@ func (int[]&* c) charAt(int index) -> int {
 	var ref = (*c) as struct{int[]* val, any* len} 
 	return ref.val[index]
 }
-
