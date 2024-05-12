@@ -22,5 +22,6 @@ internal interface IScope
     IResolvableValue ResolveValue(Token identifier);
 
     Function ResolveReceiver(IType type, Token name);
+    Function ResolveOperator(IType type, OverloadableOperator op);
     LLVMValueRef GetInterfaceVTable(IType type, IType iface);
 }

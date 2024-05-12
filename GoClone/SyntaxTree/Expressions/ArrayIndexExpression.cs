@@ -94,6 +94,43 @@ internal class ArrayIndexExpression : IExpression, IAssignable
     {
         array = array.Resolve(scope);
         index = index.Resolve(scope);
+
+        var elementType = array.GetResultType().GetElementType();
+        if (elementType is not ArrayType)
+        {
+            if (elementType.GetEffectiveType() is InterfaceType interfaceType)
+            {
+                for (int i = 0; i < interfaceType.functions.Count; i++)
+                {
+                    var fn = interfaceType.functions[i];
+                    if (fn.op is OverloadableOperator.Indexing)
+                    {
+                        return new CallExpression()
+                        {
+                            arguments = [index],
+                            callee = new MemberAccessExpression()
+                            {
+                                value = array,
+                                interfaceFunction = fn,
+                                interfaceIdx = (uint)i,
+                            },
+                            
+                        };
+                    }
+                }
+                throw new();
+            }
+
+            return new CallExpression
+            {
+                callee = new FunctionExpression()
+                {
+                    function = scope.ResolveOperator(array.GetResultType().GetPointerElementType(), OverloadableOperator.Indexing),
+                },
+                arguments = [array, index]
+            };
+        }
+
         return this;
     }
 }

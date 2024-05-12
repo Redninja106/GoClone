@@ -77,10 +77,6 @@ internal class MemberAccessExpression : IExpression, IAssignable
                 return builder.BuildExtractValue(v, fieldIdx);
             }
         }
-        else if (interfaceFunction is not null)
-        {
-            return interfaceFunction.llvmFunction;
-        }
         else if (receiverTarget is not null)
         {
             return receiverTarget.llvmFunction;

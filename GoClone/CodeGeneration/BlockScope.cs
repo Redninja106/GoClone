@@ -54,6 +54,12 @@ internal class BlockScope : IScope
         return parentScope.ResolveReceiver(type, name);
     }
 
+    public Function ResolveOperator(IType type, OverloadableOperator op)
+    {
+        return parentScope.ResolveOperator(type, op);
+    }
+
+
     public LLVMValueRef GetInterfaceVTable(IType type, IType iface)
     {
         return parentScope.GetInterfaceVTable(type, iface);

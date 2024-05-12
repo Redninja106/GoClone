@@ -20,7 +20,10 @@ internal class FunctionExpression : IExpression
 
     public IType GetResultType()
     {
-        return new FunctionType { returnType = function.returnType, parameters = function.parameters.Select(p => p.type).ToArray() };
+        var args = function.parameters.Select(p => p.type);
+        if (function.receiver != null)
+            args = args.Prepend(function.receiver.type);
+        return new FunctionType { returnType = function.returnType, parameters = args.ToArray() };
     }
 
     public IExpression Resolve(IScope scope)

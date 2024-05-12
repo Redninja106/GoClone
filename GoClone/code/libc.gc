@@ -33,11 +33,11 @@ func printBool(bool b, String&*** p) {
 	}
 }
 
-func print(Stringable& stringable) {
-	var str = stringable.string()
-	var i = 0
-	while i < str.length() {
-		putchar(str.charAt(i))
-	}
-
-}
+// func print(Stringable& stringable) {
+// 	var str = stringable.string()
+// 	var i = 0
+// 	while i < str.length() {
+// 		putchar(str[i])
+// 	}
+// 
+// }

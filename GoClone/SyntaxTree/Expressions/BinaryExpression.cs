@@ -23,10 +23,10 @@ internal class BinaryExpression : IExpression
         string l = leftParens ? $"({left})" : left.ToString();
         string r = rightParens ? $"({right})" : right.ToString();
 
-        return $"{l} {GetOperator() ?? op.ToString()} {r}";
+        return $"{l} {GetOperatorSymbol() ?? op.ToString()} {r}";
     }
 
-    public string? GetOperator()
+    public string? GetOperatorSymbol()
     {
         return op switch
         {
@@ -49,6 +49,20 @@ internal class BinaryExpression : IExpression
     {
         left = left.Resolve(scope);
         right = right.Resolve(scope);
+
+        if (left.GetResultType() is not PrimitiveType p || p.PrimitiveKind != TokenKind.Int && GetOperator() != null)
+        {
+            var op = scope.ResolveOperator(left.GetResultType()!, GetOperator()!.Value);
+            return new CallExpression() 
+            { 
+                callee = new FunctionExpression()
+                {
+                    function = op,
+                },
+                arguments = [left, right],
+            };
+        }
+
         return this;    
     }
 
@@ -116,6 +130,16 @@ internal class BinaryExpression : IExpression
             default:
                 throw new();
         }
+    }
+
+    public OverloadableOperator? GetOperator()
+    {
+        return op switch
+        {
+            TokenKind.Plus => OverloadableOperator.Addition,
+            TokenKind.Minus => OverloadableOperator.Subtraction,
+            _ => null,
+        };
     }
 
     public IType GetResultType()

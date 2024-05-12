@@ -51,4 +51,19 @@ internal interface IType : IEquatable<IType>
 
         return this;
     }
+
+    IType GetElementType()
+    {
+        if (this.GetEffectiveType() is PointerType ptr)
+        {
+            return ptr.elementType.GetElementType();
+        }
+
+        if (this.GetEffectiveType() is ReferenceType refType)
+        {
+            return refType.elementType.GetElementType();
+        }
+
+        return this;
+    }
 }

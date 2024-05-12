@@ -13,6 +13,7 @@ internal class ModuleScope(LLVMContextRef context, LLVMModuleRef module, IErrorH
     public Dictionary<string, IResolvableValue> valueDeclarations = [];
     public Dictionary<string, IResolvableType> typeDeclarations = [];
     public Dictionary<IType, Dictionary<string, Function>> receivers = new(EqualityComparer<IType>.Default);
+    public Dictionary<IType, Dictionary<OverloadableOperator, Function>> operators = new(EqualityComparer<IType>.Default);
     public Dictionary<IType, Dictionary<InterfaceType, LLVMValueRef>> vtables = new(EqualityComparer<IType>.Default);
     public List<ModuleScope> importedScopes = [];
 
@@ -66,6 +67,26 @@ internal class ModuleScope(LLVMContextRef context, LLVMModuleRef module, IErrorH
         throw new Exception($"unknown type {identifier}");
     }
 
+    public Function ResolveOperator(IType type, OverloadableOperator op)
+    {
+        type = type.GetElementType();
+
+        if (operators.TryGetValue(type, out var operatorMap) && operatorMap.TryGetValue(op, out var fn))
+        {
+            return fn;
+        }
+
+        foreach (var imported in importedScopes)
+        {
+            if (imported.operators.TryGetValue(type, out operatorMap) && operatorMap.TryGetValue(op, out fn))
+            {
+                return fn;
+            }
+        }
+
+        throw new Exception($"type {type} has no {op} overload!");
+    }
+
     public Function ResolveReceiver(IType type, Token name)
     {
         if (receivers.TryGetValue(type, out var receiverMap) && receiverMap.TryGetValue(name.ToString(), out var fn))
@@ -101,7 +122,14 @@ internal class ModuleScope(LLVMContextRef context, LLVMModuleRef module, IErrorH
             List<Function> functions = [];
             foreach (var func in interfaceType.functions)
             {
-                functions.Add(ResolveReceiver(type.GetPointerElementType(), func.name));
+                if (func.op != null)
+                {
+                    functions.Add(ResolveOperator(type.GetElementType(), func.op!.Value));
+                }
+                else
+                {
+                    functions.Add(ResolveReceiver(type.GetElementType(), func.name));
+                }
             }
             unsafe
             {
@@ -121,7 +149,14 @@ internal class ModuleScope(LLVMContextRef context, LLVMModuleRef module, IErrorH
                 List<Function> functions = [];
                 foreach (var func in iface.functions)
                 {
-                    functions.Add(ResolveReceiver(type.GetPointerElementType(), func.name));
+                    if (func.op != null)
+                    {
+                        functions.Add(ResolveOperator(type.GetElementType(), func.op.Value));
+                    }
+                    else
+                    {
+                        functions.Add(ResolveReceiver(type.GetElementType(), func.name));
+                    }
                 }
 
                 var opaquePtrType = LLVM.PointerTypeInContext(context, 0);

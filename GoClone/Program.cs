@@ -15,9 +15,11 @@ using System.Numerics;
 string[] sources = [
     File.ReadAllText("code/libc.gc"),
     File.ReadAllText("code/core/string.gc"),
-    File.ReadAllText("code/core/list.gc"),
+    // File.ReadAllText("code/core/list.gc"),
     // File.ReadAllText("code/project/lexer.gc"),
-    File.ReadAllText("code/project/list_test.gc"),
+    File.ReadAllText("code/project/string_test.gc"),
+    // File.ReadAllText("code/project/list_test.gc"),
+    // File.ReadAllText("code/project/operator_overloads.gc"),
     // File.ReadAllText("code/project/interfaces.gc"),
 ];
 

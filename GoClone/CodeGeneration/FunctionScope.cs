@@ -57,6 +57,11 @@ internal class FunctionScope : IScope
         return moduleScope.ResolveReceiver(type, name);
     }
 
+    public Function ResolveOperator(IType type, OverloadableOperator op)
+    {
+        return moduleScope.ResolveOperator(type, op);
+    }
+
     public LLVMValueRef GetInterfaceVTable(IType type, IType iface)
     {
         return moduleScope.GetInterfaceVTable(type, iface);

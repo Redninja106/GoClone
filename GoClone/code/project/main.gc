@@ -6,3 +6,28 @@ func main() {
 	var c = getchar()
 	putchar(c)
 }
+
+struct Memory {
+	any* pointer,
+	any* length,
+}
+
+int* x = 0
+
+func main() {
+	var b = getNum()
+	var c = getNum2()
+}
+
+interface Droppable {
+	func drop()
+}
+
+func getNum() -> int* {
+	var a = 0 // alloc(sizeof(int))
+	return &a
+}
+
+func getNum2() -> int* {
+	return &num
+}

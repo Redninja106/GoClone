@@ -1,0 +1,32 @@
+module main
+
+import libc
+
+func main() {
+	var a = { 1, 2 } as Point 
+	var b = { 3, 4 } as Point
+	var c = a + b
+	printInt(c[0])
+	putchar(' ')
+	printInt(c[1])
+
+}
+
+struct Point {
+	int x,
+	int y,
+}
+
+func (Point a) operator+(Point b) -> Point {
+	return { a.x + b.x, a.y + b.y } as Point
+}
+func (Point a) operator[](int index) -> int {
+	if index == 0 { 
+		return a.x 
+	}
+	if index == 1 { 
+		return a.y 
+	}
+	putchar(' ')
+	return 0
+}

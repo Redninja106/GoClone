@@ -3,12 +3,15 @@
 import libc
 
 func main() -> int {
-	var l = {69} as ConstExpr
-	var r = {420} as ConstExpr
+	var l = { 69 } as ConstExpr
+	var r = { 420 } as ConstExpr
 	var b = { l as Expr&, r as Expr& } as BinExpr
 	printValue(b as Expr&)
+	putchar(10)
 	printValue(l as Expr&)
+	putchar(10)
 	printValue(r as Expr&)
+	putchar(10)
 	return 0
 }
 
@@ -21,7 +24,7 @@ interface Expr {
 	func eval() -> int
 }
 
-type ConstExpr as struct {
+struct ConstExpr {
 	int value
 }
 

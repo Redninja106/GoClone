@@ -43,6 +43,7 @@ internal class Function : IDeclaration, IResolvableValue
         Token name;
         if (reader.Next(TokenKind.Operator, out name))
         {
+            name = reader.Current;
             op = ReadOperator(reader);
         }
         else
@@ -86,6 +87,7 @@ internal class Function : IDeclaration, IResolvableValue
             parameters = parameters,
             returnType = returnType,
             body = body,
+            op = op,
         };
     }
 
@@ -281,12 +283,22 @@ internal class Function : IDeclaration, IResolvableValue
         {
             scope.valueDeclarations.Add(name.ToString(), this);
         }
+        else if (this.op != null)
+        {
+            receiver.type = receiver.type.Resolve(scope);
+            if (!scope.operators.TryGetValue(receiver.type.GetElementType(), out var map))
+            {
+                scope.operators.Add(receiver.type.GetElementType(), map = []);
+            }
+
+            map.Add(this.op.Value, this);
+        }
         else
         {
             receiver.type = receiver.type.Resolve(scope);
-            if (!scope.receivers.TryGetValue(receiver.type.GetPointerElementType(), out var map))
+            if (!scope.receivers.TryGetValue(receiver.type.GetElementType(), out var map))
             {
-                scope.receivers.Add(receiver.type.GetPointerElementType(), map = []);
+                scope.receivers.Add(receiver.type.GetElementType(), map = []);
             }
 
             map.Add(this.name.ToString(), this);
