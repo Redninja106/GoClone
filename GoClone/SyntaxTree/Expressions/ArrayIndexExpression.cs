@@ -66,6 +66,11 @@ internal class ArrayIndexExpression : IExpression, IAssignable
             if (arr.length is null)
                 throw new();
 
+            if (array is IAssignable assignable && assignable.EmitAssignablePointer(context, builder) is LLVMValueRef ptr)
+            {
+                return builder.BuildGEP2((arrayType as ArrayType).Emit(context.llvmCtx), ptr, [LLVMValueRef.CreateConstInt(context.llvmCtx.Int32Type, 0), index.Emit(context, builder)]);
+            }
+
             throw new NotImplementedException();
         }
 
@@ -111,6 +116,10 @@ internal class ArrayIndexExpression : IExpression, IAssignable
                             callee = new MemberAccessExpression()
                             {
                                 value = array,
+                                identifier = new()
+                                {
+                                    source = "",
+                                },
                                 interfaceFunction = fn,
                                 interfaceIdx = (uint)i,
                             },

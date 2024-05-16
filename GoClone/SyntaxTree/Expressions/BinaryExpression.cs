@@ -50,7 +50,12 @@ internal class BinaryExpression : IExpression
         left = left.Resolve(scope);
         right = right.Resolve(scope);
 
-        if (left.GetResultType() is not PrimitiveType p || p.PrimitiveKind != TokenKind.Int && GetOperator() != null)
+        if (op == TokenKind.Equal)
+        {
+            right = Module.ImplicitConvert(right, left.GetResultType());
+        }
+
+        if ((left.GetResultType() is not PrimitiveType p || p.PrimitiveKind != TokenKind.Int) && GetOperator() != null)
         {
             var op = scope.ResolveOperator(left.GetResultType()!, GetOperator()!.Value);
             return new CallExpression() 
@@ -60,7 +65,7 @@ internal class BinaryExpression : IExpression
                     function = op,
                 },
                 arguments = [left, right],
-            };
+            }.Resolve(scope);
         }
 
         return this;    
@@ -127,6 +132,10 @@ internal class BinaryExpression : IExpression
                 return builder.BuildICmp(LLVMIntPredicate.LLVMIntSGT, l, r);
             case TokenKind.GreaterThanEqual:
                 return builder.BuildICmp(LLVMIntPredicate.LLVMIntSGE, l, r);
+            case TokenKind.OrOr:
+                return builder.BuildOr(l, r);
+            case TokenKind.AndAnd:
+                return builder.BuildAnd(l, r);
             default:
                 throw new();
         }

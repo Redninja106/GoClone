@@ -1,4 +1,5 @@
 ﻿using GoClone.SyntaxTree;
+using GoClone.SyntaxTree.Expressions;
 using GoClone.SyntaxTree.Types;
 using LLVMSharp.Interop;
 using System;
@@ -24,4 +25,13 @@ internal interface IScope
     Function ResolveReceiver(IType type, Token name);
     Function ResolveOperator(IType type, OverloadableOperator op);
     LLVMValueRef GetInterfaceVTable(IType type, IType iface);
+
+    // value -> interface
+    // interface -> interface
+    // interface -> ... -> interface
+    // value -> interface -> interface -> ... -> interface
+    IType MakeImplicitConversion(IExpression expression)
+    {
+        throw null;
+    }
 }

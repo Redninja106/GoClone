@@ -26,7 +26,7 @@ internal class DereferenceExpression : IExpression, IAssignable
 
     public IType GetResultType()
     {
-        return (value.GetResultType() as PointerType).elementType;
+        return (value.GetResultType().GetEffectiveType() as PointerType).elementType;
     }
 
     public LLVMValueRef? EmitAssignablePointer(EmitContext context, LLVMBuilderRef builder)

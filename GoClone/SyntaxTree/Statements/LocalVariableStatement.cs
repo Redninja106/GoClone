@@ -52,7 +52,7 @@ internal class LocalVariableStatement : IStatement, IResolvableValue
 
     public void Emit(EmitContext context, LLVMBuilderRef builder)
     {
-        Value = builder.BuildAlloca(variable.type.Emit(context.llvmCtx));
+        Value = builder.BuildAlloca(variable.type.Emit(context.llvmCtx), this.variable.name.ToString());
         if (variable.initializer != null)
         {
             var initializer = variable.initializer.Emit(context, builder);

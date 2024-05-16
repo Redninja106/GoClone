@@ -91,7 +91,7 @@ internal class TokenReader(Token[] tokens)
     {
         if (!ReadLineTerminator())
         {
-            throw new Exception();
+            throw new Exception("Expected line terminator!");
         }
     }
 

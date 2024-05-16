@@ -8,6 +8,7 @@ using GoClone.CodeGeneration;
 using GoClone.SyntaxTree.Expressions;
 using GoClone.SyntaxTree.Statements;
 using GoClone.SyntaxTree.Types;
+using LLVMSharp.Interop;
 
 namespace GoClone.SyntaxTree;
 internal class Module
@@ -30,6 +31,10 @@ internal class Module
 
         while (true) 
         {
+            if (reader.ReadLineTerminator())
+            {
+                break;
+            }
             if (reader.Next(TokenKind.OpenBracket))
             {
                 Token? length = null;
@@ -56,6 +61,28 @@ internal class Module
         }
 
         return elementType;
+    }
+
+    public static IExpression ImplicitConvert(IExpression value, IType target)
+    {
+        var sourceType = value.GetResultType().GetEffectiveType();
+        target = target.GetEffectiveType();
+
+        if (sourceType.Equals(target))
+        {
+            return value;
+        }
+
+        if (target.GetEffectiveType().GetElementType().GetEffectiveType() is InterfaceType interfaceType)
+        {
+            return new CastExpression
+            {
+                value = value,
+                type = target,
+            };
+        }
+
+        throw new Exception($"cannot convert {sourceType} into {target}!");
     }
 
     public static IType ParseElementType(TokenReader reader)
@@ -364,6 +391,10 @@ internal class Module
             case TokenKind.GreaterThan:
             case TokenKind.GreaterThanEqual:
                 return Precedence.Equality;
+            case TokenKind.OrOr:
+                return Precedence.LogicalOr;
+            case TokenKind.AndAnd:
+                return Precedence.LogicalAnd;
             default:
                 return Precedence.None;
         }

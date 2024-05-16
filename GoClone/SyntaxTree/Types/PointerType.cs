@@ -23,7 +23,7 @@ internal class PointerType : IType
 
     public bool Equals(IType? other)
     {
-        return other is PointerType ptr && elementType.Equals(ptr);
+        return other is PointerType ptr && elementType.Equals(ptr.elementType);
     }
 
     public IType Resolve(IScope scope)

@@ -54,10 +54,10 @@ internal class CastExpression : IExpression
             return BuildMakeRef(context, builder, LLVMValueRef.CreateConstInt(context.llvmCtx.Int64Type, (ulong)array.intLength));
         }
 
-        if (value.GetResultType().GetEffectiveType() is ReferenceType referenceType && type is StructType s && s.fields.Count == 2 && s.fields.All(f => f.type is PointerType))
+        if (value.GetResultType().GetEffectiveType() is ReferenceType referenceType && type.GetEffectiveType() is StructType s && s.fields.Count == 2 && s.fields.All(f => f.type is PointerType))
         {
             return value.Emit(context, builder);
-            return builder.BuildBitCast(value.Emit(context, builder), type.Emit(context.llvmCtx));
+            // return builder.BuildBitCast(value.Emit(context, builder), type.Emit(context.llvmCtx));
         }
         
         if (value.GetResultType().GetEffectiveType() is PointerType ptr && type is PrimitiveType intTo)
@@ -97,6 +97,11 @@ internal class CastExpression : IExpression
 
     private LLVMValueRef GetValuePtr(EmitContext context, LLVMBuilderRef builder)
     {
+        if (value.GetResultType() is PointerType)
+        {
+            return value.Emit(context, builder);
+        }
+
         if (value is IAssignable assignable)
         {
             var ptr = assignable.EmitAssignablePointer(context, builder);
@@ -133,4 +138,14 @@ internal class CastExpression : IExpression
     {
         return $"{this.value} as {this.type}";
     }
+}
+
+
+class X
+{
+    void E()
+    {
+        int X = 0;
+    }
+
 }

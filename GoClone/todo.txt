@@ -4,7 +4,7 @@
 --interfaces--
 --heap allocs-- & ARC
 arrays // half?
-strings // half
+strings // half?
 --multiple modules--
 enums
 std lib
@@ -22,4 +22,6 @@ all primitive types
 operator overloads
 tuples
 modifiers
+compound assignment operators! // note: impl via resolve(), ie a+=b resolves to a=a+b, beware of double execution of a
 
+f

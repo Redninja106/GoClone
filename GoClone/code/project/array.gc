@@ -19,8 +19,8 @@ func main() {
 }
 
 func (int[4]* values) sum() -> int {
-	var i = 0
-	var sum = 0
+	int i = 0
+	int sum = 0
 	while i < 4 {
 		printInt(values[i])
 		putchar(10)
@@ -39,3 +39,7 @@ func (int[]& values) length() -> int {
 	return (values as struct { any* val, any* length }).length as int 
 }
 */
+
+enum {
+	Monday -> struct { int x, String s }
+}::Monday

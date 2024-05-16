@@ -1,22 +1,70 @@
 module core
 
+import libc
+
 interface String {
 	func length() -> int,
 	func operator[](int index) -> int,
 }
 
-// interface Stringable {
-// 	func string() -> String&,
-// }
+interface Stringable {
+	func string() -> String&
+}
+
+func print(Stringable& value) {
+	var string = value.string()
+	var i = 0
+	var length = string.length()
+	while i < length {
+		putchar(string[i])
+		i = i + 1
+	}
+	putchar(10)
+}
+
+type Reference as struct { int[]* value, any* info } 
+
+func (int i) string() -> String& {
+	var n = i
+	var length = 0
+	var buf -> int[11]
+	var str -> int[]*
+	var c -> int
+	var arr -> int[]&*
+
+	if n < 0 {
+		n = -n
+	}
+
+	while n > 0 {
+		buf[length] = '0' + n % 10
+		length = length + 1
+		n = n / 10
+	} 
+
+	str = malloc(sizeof(int) * length) as int[]* 
+	c = 0
+
+	while c < length {
+		str[c] = buf[length - c - 1]
+		c = c + 1
+	}
+
+
+	arr = malloc(sizeof(int[]&)) as int[]&*
+	*arr = { str, length as any* } as int[]&
+
+	return arr as String&
+}
 
 // === string impl for int[]& === 
 
 func (int[]&* c) length() -> int {
-	var ref = (*c) as struct{any* val, any* len} 
-	return ref.len as int
+	var ref = (*c) as Reference
+	return ref.info as int
 }
 
 func (int[]&* c) operator[](int index) -> int {
-	var ref = (*c) as struct{int[]* val, any* len} 
-	return ref.val[index]
+	var ref = (*c) as Reference
+	return (ref.value as int[]*)[index]
 }

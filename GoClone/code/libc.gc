@@ -4,7 +4,7 @@ func malloc(int size) -> any*
 func free(any* ptr)
 func putchar(int c)
 func getchar() -> int
-
+/*
 func printInt(int i) {
 	if (i < 0) {
 		putchar('-')
@@ -18,7 +18,7 @@ func printInt(int i) {
 	return
 }
 
-func printBool(bool b, String&*** p) {
+func printBool(bool b) {
 	if b {
 		putchar('t')
 		putchar('r')
@@ -31,13 +31,4 @@ func printBool(bool b, String&*** p) {
 		putchar('s')
 		putchar('e')
 	}
-}
-
-// func print(Stringable& stringable) {
-// 	var str = stringable.string()
-// 	var i = 0
-// 	while i < str.length() {
-// 		putchar(str[i])
-// 	}
-// 
-// }
+}*/

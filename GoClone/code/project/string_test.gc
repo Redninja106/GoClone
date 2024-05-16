@@ -2,19 +2,6 @@ module main
 
 import libc
 
-[private]
 func main() {
-	// var str -> int[13] = "hello, world!"
-	// var a -> int[]& = str as int[]&
-	// var s -> String& = a as String&
-	// printStr(s)
-	printStr("hello, world!" as int[]& as String&)
-}
-
-func printStr(String& str) {
-	var i = 0
-	while i < str.length() {
-		putchar(str[i])
-		i = i + 1
-	}
+	print(420)
 }

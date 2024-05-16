@@ -1,0 +1,9 @@
+struct Reference {
+	any* ptr,
+	any* info,
+}
+
+
+func (Reference) new(any*, any*) -> Reference {
+	int a = 12
+}

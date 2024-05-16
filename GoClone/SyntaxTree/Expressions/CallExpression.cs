@@ -16,9 +16,10 @@ internal class CallExpression : IExpression
     public IExpression Resolve(IScope scope)
     {
         callee = callee.Resolve(scope);
+        var fnType = (FunctionType)callee.GetResultType();
         for (int i = 0; i < arguments.Length; i++)
         {
-            arguments[i] = arguments[i].Resolve(scope);
+            arguments[i] = Module.ImplicitConvert(arguments[i].Resolve(scope), fnType.parameters[i]).Resolve(scope);
         }
         return this;
     }
